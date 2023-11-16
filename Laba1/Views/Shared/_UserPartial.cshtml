@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Laba1.DAL.Entities;
+@inject SignInManager<ApplicationUser> signInManager
+<!-- Корзина -->
+@if (signInManager.IsSignedIn(User))
+{
+    @await Component.InvokeAsync("Cart")
+    <div class="dropdown ml-4 nav-color">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img img-action="GetAvatar"
+                 img-controller="Image"
+                 width="30" alt="User"
+                 class="rounded bg-light" />
+            @* <img src=" @Url.Action("GetAvatar","Image")" width="30" alt="User" class="rounded bg-light" /> *@
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="#">
+                    <img img-action="GetAvatar"
+                         img-controller="Image"
+                         width="30" alt="User"
+                         class="rounded bg-light" />
+
+                    @* <img src=" @Url.Action("GetAvatar","Image")" width="50" alt="User" class="rounded" /> *@
+                    @User.Identity.Name
+                </a>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li><a class="dropdown-item" asp-action="UserProducts" asp-controller="Product">Мои товары</a></li>
+            <li>
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnurl="@ViewContext.HttpContext.Request.Path">
+                    <input type="submit"
+                           value="Log off"
+                           class="dropdown-item" />
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <ul class="nav navbar-nav ms-auto">
+		<li>
+			<a class="nav-item nav-link" asp-area="Identity" asp-page="/Account/Login">Войти</a>
+		</li>
+		<li>
+			<a class="nav-item nav-link" asp-area="Identity" asp-page="/Account/Register">Зарегистрироваться</a>
+		</li>
+	</ul>
+}

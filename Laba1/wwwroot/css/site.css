@@ -1,0 +1,21 @@
+header, footer {
+    background-color:rgb(33,37,41);
+}
+
+.nav-color {
+    color:rgba(255,255,255,0.5);
+}
+
+footer {
+    height: 40px;
+    padding: 0px !important;
+    margin: 0px;
+}
+
+div.navbar {
+    padding-top: 0px;
+}
+
+a > i {
+    font-size: 1em!important;
+} 

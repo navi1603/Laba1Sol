@@ -1,0 +1,39 @@
+﻿@using Laba1Sol.Blazor.Data
+
+<h3>DishesList</h3>
+@if (Dishes == null)
+{
+	<p>Загрузка ...</p>
+}
+else
+{
+	<div class="list-group">
+		@{
+			var i = 1;
+			foreach (var dish in Dishes)
+			{
+				<button type="button" class="list-group-item list-group-item-action text-start
+					@(SelectedId == dish.DishId ? "active" : "")"
+				@onclick="@(e=> Selected(e,dish.DishId))">
+					@(i++) - @dish.DishName
+				</button>
+			}
+		}
+	</div>
+}
+@code {
+	[Parameter]
+	public IEnumerable<ListViewModel> Dishes { get; set; }
+	[Parameter]
+	public EventCallback<IEnumerable<ListViewModel>> DishesChanged { get; set; }
+	private int SelectedId = 0;
+	[Parameter]
+	public EventCallback<int> SelectedObjectChanged { get; set; }
+	private void Selected(MouseEventArgs e, int id)
+	{
+		SelectedId = id;
+		SelectedObjectChanged.InvokeAsync(id);
+	}
+
+}
+

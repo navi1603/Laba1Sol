@@ -1,0 +1,23 @@
+﻿@using Laba1Sol.Blazor.Data;
+@if (Dish != null)
+{
+	<img src="@imageSrc" class="img-thumbnail" width="150" />
+	<div>
+		<p>@Dish.DishName - @Dish.Description</p>
+		<div class="bg-primary badge badge-info ">@Dish.Calories калорий</div>
+	</div>
+}
+@code {
+	[Parameter]
+	public DetailsViewModel Dish { get; set; }
+	[Parameter]
+	public EventCallback<DetailsViewModel> DishChanged { get; set; }
+	string imageSrc
+	{
+		get
+		{
+			return $"https://localhost:7087/Images/{Dish.Image}";
+		}
+	}
+}
+

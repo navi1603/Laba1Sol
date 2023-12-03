@@ -4,7 +4,7 @@
     var categories = ViewData["Groups"] as IEnumerable<DishGroup>;
     int currentGroup = (int)ViewData["CurrentGroup"];
 
-    var text = currentGroup != 0 ? categories.FirstOrDefault(g => g.DishGroupId == currentGroup)?.GroupName: "Все";
+    var text = currentGroup != 0 ? categories.FirstOrDefault(g => g.DishGroupId == currentGroup)?.GroupName : "Все";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -17,7 +17,7 @@
                role="button"
                id="dropdownMenuLink"
                data-bs-toggle="dropdown"
-               aria-haspopup="true" 
+               aria-haspopup="true"
                aria-expanded="false">
                 @text
             </a>
@@ -26,20 +26,22 @@
 
                 @foreach (var item in categories)
                 {
-                    <li><a class="dropdown-item"
-                       asp-action="Index"
-                       asp-controller="Product"
-                       asp-route-group="@item.DishGroupId"
-                       asp-route-pageNo="1">
-                       @item.GroupName 
-                   </a></li>
+                    <li>
+                        <a class="dropdown-item"
+                           asp-action="Index"
+                           asp-controller="Product"
+                           asp-route-group="@item.DishGroupId"
+                           asp-route-pageNo="1">
+                            @item.GroupName
+                        </a>
+                    </li>
                 }
             </ul>
         </div>
     </div>
     <div class="col-10" justify-content-start>
         <div class="card-group" id="list">
-                <partial name="_ListPartial" model="@Model"/>
+            <partial name="_ListPartial" model="@Model" />
         </div>
         <pager page-current="@Model.CurrentPage"
                page-total="@Model.TotalPages"
@@ -49,4 +51,3 @@
     </div>
 
 </div>
-

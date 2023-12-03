@@ -1,18 +1,32 @@
 using Laba1.DAL.Data;
 using Laba1.DAL.Entities;
+using Laba1.Extensions;
+using Laba1.Models;
 using Laba1.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
 			throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(opt =>
+{
+    opt.Cookie.HttpOnly = true;
+    opt.Cookie.IsEssential = true;
+});
+builder.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<Cart>(sp => CartService.GetCart(sp));
+
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -31,11 +45,23 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+//Добавляем использование логера
+
+builder.Host.ConfigureLogging(logging =>
+{
+	  logging.ClearProviders();
+	  logging.AddFile("Logs/log-{Date}.txt");
+	  logging.AddFilter("Microsoft", LogLevel.None);
+});
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
+
+
 var app = builder.Build();
+app.UseFileLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -53,9 +79,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
+app.UseSession();
 
 app.UseAuthorization();
+app.UseCors(policy => policy
+						.AllowAnyOrigin()
+						.AllowAnyMethod()
+						.WithHeaders(HeaderNames.ContentType));
 
 app.MapControllerRoute(
 	name: "default",
@@ -63,6 +94,6 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-await DbInitializer.Seed(app);
+await DbInitializer.SetupDb(app);
 
 app.Run();

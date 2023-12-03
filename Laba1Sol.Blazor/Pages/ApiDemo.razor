@@ -1,0 +1,28 @@
+﻿@page "/apidemo"
+@inject HttpClient client
+@using Laba1Sol.Blazor.Components
+@* @inject IHttpClientFactory clientFactory *@
+@using Laba1Sol.Blazor.Data
+
+<div class="container">
+	<DishesList @bind-Dishes="dishes" SelectedObjectChanged="ShowDetails"></DishesList>
+	<DishDetails @bind-Dish="SelectedDish"></DishDetails>
+</div>
+
+@code {
+	[Parameter]
+	public IEnumerable<ListViewModel> dishes { get; set; }
+	[Parameter]
+	public DetailsViewModel SelectedDish { get; set; }
+
+	string apiBaseAddress = "https://localhost:7087/Api/Dishes";
+	protected override async Task OnInitializedAsync()
+	{
+		dishes = await client.GetFromJsonAsync<IEnumerable<ListViewModel>>(apiBaseAddress);
+	}
+	private async Task ShowDetails(int id)
+	{
+		SelectedDish = await client.GetFromJsonAsync<DetailsViewModel>(apiBaseAddress + $"/{id}");
+	}
+}
+
